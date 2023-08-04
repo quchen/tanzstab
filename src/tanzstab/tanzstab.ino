@@ -1,5 +1,6 @@
 #include <FastLED.h>
 #include "WiFi.h"
+#include <ezButton.h>
 
 FASTLED_USING_NAMESPACE
 
@@ -10,9 +11,13 @@ FASTLED_USING_NAMESPACE
 
 CRGB leds[NUM_LEDS];
 
+#define NEXT_BUTTON_PIN 0
+ezButton next_button(NEXT_BUTTON_PIN);
+
 #include "effect_interruptible.h"
 #include "effect_rainbow_glitter.h"
 #include "effect_synchronous_pointer.h"
+
 
 void setup() {
     Serial.begin(57600);
@@ -31,19 +36,29 @@ void setup() {
     Serial.print(F("Seed RNG\n"));
     random16_set_seed(esp_random());
 
+    Serial.print(F("Configure button\n"));
+    next_button.setDebounceTime(20);
+
     Serial.print(F("Setup done\n"));
 }
 
+uint8_t current_effect = 0;
 void loop() {
-    loop_synchronous_pointer();
+    switch (current_effect) {
+        case 0: loop_rainbow_glitter(); break;
+        case 1: loop_synchronous_pointer(); break;
+    }
+    current_effect = addmod8(current_effect, 1, 2);
 }
 
 void loop_simple_effect(InterruptibleEffect& effect, uint8_t frames_per_second) {
     while(true) {
+        next_button.loop();
+        if (next_button.isPressed()) {
+            break;
+        }
         EVERY_N_MILLIS(1000 / frames_per_second) {
-            if (!effect.tick()) {
-                break;
-            }
+            effect.tick();
             FastLED.show();
         }
     }
@@ -67,10 +82,12 @@ void loop_synchronous_pointer() {
     SynchronousPointer effect;
 
     while(true) {
+        next_button.loop();
+        if (next_button.isPressed()) {
+            break;
+        }
         EVERY_N_MILLIS(200) {
-            if (!effect.tick()) {
-                break;
-            }
+            effect.tick();
             repaint = true;
         }
         EVERY_N_MILLIS(1000/60) {
