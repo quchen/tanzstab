@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "effect_interruptible.h"
 
+// Rainbow glitter has internal state, and simply updates on each tick.
 class RainbowGlitter : public InterruptibleEffect {
     public:
         RainbowGlitter(uint8_t arg_fade_amount, uint8_t arg_random_walk_delta);

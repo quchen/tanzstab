@@ -1,6 +1,8 @@
 #include "Arduino.h"
 #include "effect_interruptible.h"
 
+// Synchronous pointers don’t have internal state, but their fading animation is
+// controlled independently of the ticking, making it a bit more complex to use.
 class SynchronousPointer : public InterruptibleEffect {
     public:
         bool tick();

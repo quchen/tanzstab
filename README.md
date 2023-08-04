@@ -8,6 +8,8 @@ Triangles
 1. 3 layers
 1. Add chamfers
 4. Type: ABA (*does* exist)
+5. - Accidentially printed with infill
+   - Accidentially 12mm high instead of 10
 
 Dovetails
 ---------
@@ -36,3 +38,9 @@ Lots of tweaking in FreeCAD.
 Ordered Dotstar LED strips. Plan is to cut them into pieces, re-solder them.
 Dotstar has higher frequency (better for pictures), but an additional data
 cable. Around 1000 (120×8) soldering joints sounds daunting.
+
+2023-08-04
+==========
+
+Played around with FastLED and five 12-LED WS2811 (Neopixel) that I had lying
+around.
