@@ -12,6 +12,7 @@ CRGB leds[NUM_LEDS];
 
 #include "effect_interruptible.h"
 #include "effect_rainbow_glitter.h"
+#include "effect_synchronous_pointer.h"
 
 void setup() {
     Serial.begin(57600);
@@ -34,12 +35,12 @@ void setup() {
 }
 
 void loop() {
-    loop_rainbow_glitter();
+    loop_synchronous_pointer();
 }
 
-void loop_effect(InterruptibleEffect& effect) {
+void loop_simple_effect(InterruptibleEffect& effect, uint8_t frames_per_second) {
     while(true) {
-        EVERY_N_MILLIS(1000/60) {
+        EVERY_N_MILLIS(1000 / frames_per_second) {
             if (!effect.tick()) {
                 break;
             }
@@ -53,7 +54,32 @@ void loop_rainbow_glitter() {
 
     uint8_t arg_fade_amount = 10;
     uint8_t arg_random_walk_delta = 3;
-    RainbowGlitter glitter(arg_fade_amount, arg_random_walk_delta);
+    RainbowGlitter effect(arg_fade_amount, arg_random_walk_delta);
 
-    loop_effect(glitter);
+    loop_simple_effect(effect, 60);
+}
+
+
+void loop_synchronous_pointer() {
+    Serial.print(F("Effect: synchronous pointer\n"));
+
+    bool repaint = false;
+    SynchronousPointer effect;
+
+    while(true) {
+        EVERY_N_MILLIS(200) {
+            if (!effect.tick()) {
+                break;
+            }
+            repaint = true;
+        }
+        EVERY_N_MILLIS(1000/60) {
+            effect.fade(10);
+            repaint = true;
+        }
+        if (repaint) {
+            FastLED.show();
+            repaint = false;
+        }
+    }
 }
