@@ -32,10 +32,7 @@ class FadingIndividual {
             color_index = random8();
             lifetime_ms = random16(500, 2000);
         }
-        void move(uint8_t delta) {
-            current_position += delta;
-        }
-        uint16_t position() {
+        uint8_t position() {
             return current_position % NUM_LEDS;
         }
         uint8_t get_color_index() {
@@ -45,7 +42,7 @@ class FadingIndividual {
         unsigned long timestamp_birth;
         unsigned long timestamp_now;
         unsigned long lifetime_ms;
-        uint8_t current_position;
+        uint16_t current_position;
         uint8_t color_index;
 };
 
