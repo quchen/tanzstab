@@ -11,29 +11,17 @@ class FadingIndividual {
             timestamp_now = _timestamp_now;
         }
         bool isAlive() {
-            if (!alive) {
-                return false;
-            }
-
-            if (age() > lifetime_ms) {
-                alive = false;
-                return false;
-            }
-
-            return true;
+            return age() < lifetime_ms;
         }
         unsigned long age() {
             return timestamp_now - timestamp_birth;
         }
-        fract8 age_fract() {
-            return age() * 256 / lifetime_ms;
-        }
         fract8 brightness() {
-            fract8 age = age_fract();
-            if(age < 64) {
-                return ease8InOutQuad(lerp8by8(0, 255, age * 4));
-            } else if (age > 192) {
-                fract8 remaining_time_fract = 255 - age;
+            fract8 age_fract = age() * 256 / lifetime_ms;
+            if(age_fract < 64) {
+                return ease8InOutQuad(lerp8by8(0, 255, age_fract * 4));
+            } else if (age_fract >= 192) {
+                fract8 remaining_time_fract = 255 - age_fract;
                 return ease8InOutQuad(lerp8by8(0, 255, remaining_time_fract * 4));
             }
             return 255;
@@ -41,7 +29,6 @@ class FadingIndividual {
         void birth() {
             current_position = random8(NUM_LEDS);
             timestamp_birth = timestamp_now;
-            alive = true;
             color_index = random8();
             lifetime_ms = random16(500, 2000);
         }
@@ -58,18 +45,12 @@ class FadingIndividual {
         unsigned long timestamp_birth;
         unsigned long timestamp_now;
         unsigned long lifetime_ms;
-        bool alive = false;
         uint8_t current_position;
         uint8_t color_index;
 };
 
 class FadingIndividuals : public InterruptibleEffect {
     public:
-        FadingIndividuals() {
-            for (int i = 0; i < MAX_INDIVIDUALS; ++i) {
-                individuals[i] = FadingIndividual();
-            }
-        }
         bool tick() {
             clear_strip();
             unsigned long now = millis();
