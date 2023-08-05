@@ -17,6 +17,7 @@ ezButton next_button(NEXT_BUTTON_PIN);
 #include "effect_interruptible.h"
 #include "effect_rainbow_glitter.h"
 #include "effect_synchronous_pointer.h"
+#include "effect_fading_individuals.h"
 
 
 void setup() {
@@ -42,13 +43,14 @@ void setup() {
     Serial.print(F("Setup done\n"));
 }
 
-uint8_t current_effect = 0;
+uint8_t current_effect = 2;
 void loop() {
     switch (current_effect) {
         case 0: loop_rainbow_glitter(); break;
         case 1: loop_synchronous_pointer(); break;
+        case 2: loop_fading_individuals(); break;
     }
-    current_effect = addmod8(current_effect, 1, 2);
+    current_effect = addmod8(current_effect, 1, 3);
 }
 
 void loop_simple_effect(InterruptibleEffect& effect, uint8_t frames_per_second) {
@@ -70,6 +72,14 @@ void loop_rainbow_glitter() {
     uint8_t arg_fade_amount = 10;
     uint8_t arg_random_walk_delta = 3;
     RainbowGlitter effect(arg_fade_amount, arg_random_walk_delta);
+
+    loop_simple_effect(effect, 60);
+}
+
+void loop_fading_individuals() {
+    Serial.print(F("Effect: fading individuals\n"));
+
+    FadingIndividuals effect;
 
     loop_simple_effect(effect, 60);
 }
